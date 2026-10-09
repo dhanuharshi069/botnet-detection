@@ -1,69 +1,50 @@
 # 🛡️ IoT Botnet Attack Detection Using Machine Learning
 
-An intelligent security project designed to analyze IoT network traffic and identify potentially malicious activity using machine learning.
+A machine learning-based web application for analyzing network-flow features and classifying traffic as potentially normal or botnet-related.
 
 ## 📌 Project Overview
 
-The rapid growth of Internet of Things (IoT) devices has increased the risk of botnet attacks. Compromised devices can be used to launch malicious activities, disrupt network services, and threaten connected systems.
+Internet of Things (IoT) devices can be vulnerable to botnet attacks. This project demonstrates how machine learning can help identify suspicious network-flow patterns and display classification results through a web dashboard.
 
-This project aims to develop a machine learning-based botnet detection system that analyzes network traffic features, classifies suspicious activity, and supports timely security alerts.
+The application uses a trained Random Forest model, a feature scaler, and a Flask backend with a browser-based interface.
 
-## 🎯 Objectives
+## ✨ Features
 
-- Analyze IoT network traffic to identify suspicious patterns.
-- Apply machine learning techniques to classify network activity.
-- Distinguish between benign and malicious traffic.
-- Develop a prediction module for detecting potential botnet activity.
-- Provide alerts when suspicious activity is detected.
-- Evaluate model performance using appropriate classification metrics.
+- **Traffic Prediction:** Classify network-flow input using the trained model.
+- **Batch CSV Prediction:** Upload a CSV file to analyze multiple rows.
+- **Threat Classification:** Display predicted labels and confidence values.
+- **Attack Feed Simulation:** View sample flow predictions in a simulated feed.
+- **Dashboard:** Explore model-related metrics and feature information.
+- **Web Interface:** Access the application through a browser.
 
-## 🏗️ System Architecture
+## 🧰 Technology Stack
+
+- Python
+- Flask
+- Scikit-learn
+- Pandas
+- HTML, CSS, and JavaScript
+- Joblib
+- Ngrok for temporary public access during development
+
+## 📁 Project Structure
 
 ```text
-IoT Network Traffic Dataset
-            |
-            v
-     Data Preprocessing
-            |
-            v
- Feature Selection / Extraction
-            |
-            v
-  Trained ML Classification Model
-            |
-            v
-     Prediction Module
-            |
-            v
-  Benign or Suspicious Traffic
-            |
-            v
-   Alert and Result Display
+botnet-detection/
+├── app.py
+├── requirements.txt
+├── README.md
+├── .gitignore
+├── models/
+│   ├── random_forest.pkl
+│   └── scaler.pkl
+├── data/
+│   └── sim_data.csv
+└── static/
+    └── index.html
 ```
 
-## ⚙️ Technologies
-
-- **Programming:** Python
-- **Data Processing:** Pandas, NumPy
-- **Machine Learning:** Scikit-learn
-- **Visualization:** Matplotlib, Seaborn
-- **Development Environment:** Google Colab
-- **Version Control:** Git and GitHub
-
-*Update this list to reflect the libraries and tools actually used in your implementation.*
-
-## 📊 Dataset
-
-The system requires a labeled dataset containing network traffic features for benign and malicious activity.
-
-Possible research datasets include:
-
-- **N-BaIoT:** IoT botnet traffic collected from networked devices.
-- **BoT-IoT:** A dataset containing benign and simulated IoT attack traffic.
-
-Use the dataset on which your model was actually trained, and include its original source and license where applicable.
-
-## 🚀 Getting Started
+## ⚙️ Installation and Setup
 
 ### 1. Clone the repository
 
@@ -74,54 +55,83 @@ cd botnet-detection
 
 ### 2. Create a virtual environment
 
+**Windows:**
+
 ```bash
 python -m venv venv
-```
-
-Activate it on Windows:
-
-```powershell
 venv\Scripts\activate
 ```
 
-### 3. Install dependencies
+**macOS/Linux:**
 
-If your repository contains a `requirements.txt` file:
+```bash
+python3 -m venv venv
+source venv/bin/activate
+```
+
+### 3. Install dependencies
 
 ```bash
 pip install -r requirements.txt
 ```
 
-Otherwise, install the dependencies required by your implementation.
+### 4. Start the application
 
-### 4. Run the project
+```bash
+python app.py
+```
 
-Follow the execution instructions for your actual entry-point file, notebook, or application. Add the exact command here once the project structure is finalized.
+Open this address in your browser:
 
-## 📈 Model Evaluation
+```text
+http://127.0.0.1:5000
+```
 
-Evaluate the trained model using relevant metrics, such as:
+Keep the terminal running while using the application.
 
-- Accuracy
-- Precision
-- Recall
-- F1-score
-- Confusion matrix
+## 📊 CSV Input Format
 
-For security applications, examine false negatives and false positives carefully. High accuracy alone does not establish that a model reliably detects botnet attacks.
+For batch prediction, prepare a CSV file containing these numeric columns:
 
-## 🔮 Future Enhancements
+| Column | Description |
+|---|---|
+| `Dur` | Flow duration |
+| `TotPkts` | Total packet count |
+| `TotBytes` | Total bytes |
+| `SrcBytes` | Source bytes |
 
-- Interactive security monitoring dashboard.
-- Real-time or streaming traffic analysis.
-- Explainable machine learning predictions.
-- Detailed attack statistics and visualizations.
-- Improved generalization across IoT devices and datasets.
-- Deployment as a web application.
+Example:
 
-## ⚠️ Disclaimer
+```csv
+Dur,TotPkts,TotBytes,SrcBytes
+0.0003,2,203,64
+0.0009,2,135,75
+1.25,18,1450,820
+```
 
-This project is intended for educational and research purposes. Detection results depend on the quality of the dataset, model training, and evaluation methodology. Predictions should not be treated as definitive proof of an attack.
+Use feature values and units compatible with those used to train the model.
+
+## 🔍 How It Works
+
+1. The user enters network-flow features or uploads a CSV file.
+2. The Flask backend prepares the input for the trained model.
+3. The model generates a classification.
+4. The dashboard displays the predicted label and associated confidence value.
+
+## ⚠️ Limitations
+
+- Predictions depend on the training data, model quality, and compatibility of input features.
+- Sample CSV data and attack-feed simulations are for demonstration and do not represent verified live attacks.
+- Live-network functionality should not be considered genuine real-time botnet detection unless actual traffic capture, feature extraction, and model inference are implemented and validated.
+- Model performance values should be reported only after evaluation on a documented test dataset.
+
+## 🚀 Future Enhancements
+
+- Integrate validated live network-flow capture.
+- Add model evaluation reports and confusion-matrix generation from test data.
+- Improve input validation and error handling.
+- Add prediction-history storage and downloadable reports.
+- Deploy the application on a persistent hosting service.
 
 ## 👨‍💻 Author
 
@@ -131,4 +141,4 @@ GitHub: [@dhanuharshi069](https://github.com/dhanuharshi069)
 
 ---
 
-⭐ If you find this project useful, consider starring the repository.
+*Academic and demonstration project for IoT network security and machine learning.*
