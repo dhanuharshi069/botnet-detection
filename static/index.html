@@ -1,0 +1,935 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+
+<title>NetGuard AI</title>
+
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Syne:wght@400;600;800&display=swap" rel="stylesheet">
+
+<style>
+
+*{box-sizing:border-box;margin:0;padding:0}
+
+:root{--bg:#0a0e1a;--surface:#111827;--card:#1a2236;--border:#1e3a5f;--accent:#00d4ff;--accent2:#00ff88;--danger:#ff4757;--warn:#ffa502;--text:#e2e8f0;--muted:#64748b}
+
+body{background:var(--bg);color:var(--text);font-family:"Syne",sans-serif;min-height:100vh}
+
+nav{display:flex;align-items:center;justify-content:space-between;padding:.875rem 2rem;border-bottom:1px solid var(--border);background:rgba(10,14,26,.97);position:sticky;top:0;z-index:100}
+
+.logo{font-size:17px;font-weight:800;color:var(--accent);display:flex;align-items:center;gap:8px}
+
+.dot{width:8px;height:8px;border-radius:50%;background:var(--accent2);animation:pulse 2s infinite}
+
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.6;transform:scale(1.4)}}
+
+.nav-links{display:flex;gap:4px}
+
+.nl{padding:6px 12px;border-radius:6px;font-size:12px;font-weight:600;cursor:pointer;color:var(--muted);border:none;background:none;font-family:"Syne",sans-serif;transition:all .15s}
+
+.nl:hover,.nl.active{color:var(--accent);background:rgba(0,212,255,.08)}
+
+.page{display:none;padding:1.5rem;animation:fi .2s ease}
+
+.page.active{display:block}
+
+@keyframes fi{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+
+
+
+/* HOME */
+
+.hero{text-align:center;padding:2.5rem 1rem 2rem;max-width:680px;margin:0 auto}
+
+.hbadge{display:inline-block;padding:4px 14px;border-radius:20px;border:1px solid var(--accent);color:var(--accent);font-size:11px;font-family:"JetBrains Mono",monospace;margin-bottom:1.25rem;letter-spacing:.08em}
+
+.hero h1{font-size:42px;font-weight:800;line-height:1.1;margin-bottom:1rem;letter-spacing:-1px}
+
+.hero h1 span{color:var(--accent)}
+
+.hero p{font-size:14px;color:var(--muted);line-height:1.8;margin-bottom:1.75rem}
+
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:1.75rem}
+
+.sc{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:1.125rem;text-align:center}
+
+.sv{font-size:28px;font-weight:800;color:var(--accent);font-family:"JetBrains Mono",monospace}
+
+.sl{font-size:11px;color:var(--muted);margin-top:4px}
+
+.btn{padding:11px 26px;border-radius:8px;background:var(--accent);color:#0a0e1a;font-weight:700;font-size:13px;cursor:pointer;border:none;font-family:"Syne",sans-serif;transition:all .15s;margin:0 4px}
+
+.btn:hover{background:#00b8d9;transform:translateY(-1px)}
+
+.btn.out{background:transparent;color:var(--accent);border:1px solid var(--accent)}
+
+.feature-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;max-width:860px;margin:2rem auto 0}
+
+.fc{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:1.125rem;cursor:pointer;transition:border .15s}
+
+.fc:hover{border-color:var(--accent)}
+
+.fc-icon{font-size:24px;margin-bottom:.625rem}
+
+.fc-title{font-size:13px;font-weight:600;color:var(--text);margin-bottom:4px}
+
+.fc-desc{font-size:12px;color:var(--muted);line-height:1.6}
+
+
+
+/* SHARED */
+
+.panel{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:1.375rem}
+
+.pt{font-size:11px;font-weight:600;color:var(--accent);margin-bottom:1.125rem;letter-spacing:.08em;text-transform:uppercase;font-family:"JetBrains Mono",monospace}
+
+.fg{margin-bottom:.875rem}
+
+.fl{font-size:10px;color:var(--muted);margin-bottom:5px;display:block;letter-spacing:.06em;text-transform:uppercase}
+
+.fi{width:100%;background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:9px 13px;color:var(--text);font-size:13px;font-family:"JetBrains Mono",monospace;outline:none;transition:border .15s}
+
+.fi:focus{border-color:var(--accent)}
+
+.abtn{width:100%;padding:12px;background:var(--accent);color:#0a0e1a;font-weight:700;font-size:13px;border:none;border-radius:8px;cursor:pointer;font-family:"Syne",sans-serif;margin-top:.375rem;transition:all .15s}
+
+.abtn:hover{background:#00b8d9}
+
+.abtn:disabled{opacity:.5;cursor:not-allowed}
+
+.abtn.red{background:var(--danger);color:#fff}
+
+.abtn.red:hover{background:#e02030}
+
+.abtn.green{background:#0F6E56;color:#fff}
+
+.rbox{background:var(--surface);border-radius:10px;padding:1.125rem;text-align:center;border:1px solid var(--border);margin-bottom:.875rem}
+
+.rl{font-size:10px;color:var(--muted);letter-spacing:.08em;text-transform:uppercase;margin-bottom:.4rem}
+
+.rv{font-size:32px;font-weight:800;font-family:"JetBrains Mono",monospace}
+
+.rv.botnet{color:var(--danger)}.rv.normal{color:var(--accent2)}.rv.wait{color:var(--muted);font-size:15px;font-weight:400}
+
+.cbar{margin-top:.875rem}
+
+.clrow{display:flex;justify-content:space-between;font-size:11px;color:var(--muted);margin-bottom:5px}
+
+.ctrack{height:7px;background:var(--surface);border-radius:4px;overflow:hidden;border:1px solid var(--border)}
+
+.cfill{height:100%;border-radius:4px;transition:width .6s ease}
+
+.tbadge{display:inline-block;padding:3px 12px;border-radius:20px;font-size:11px;font-weight:700;margin-top:.75rem;letter-spacing:.05em}
+
+.tbadge.high{background:rgba(255,71,87,.15);color:var(--danger);border:1px solid rgba(255,71,87,.3)}
+
+.tbadge.medium{background:rgba(255,165,2,.12);color:var(--warn);border:1px solid rgba(255,165,2,.3)}
+
+.tbadge.low{background:rgba(0,255,136,.1);color:var(--accent2);border:1px solid rgba(0,255,136,.25)}
+
+
+
+/* MANUAL DETECTOR */
+
+.det-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;max-width:880px;margin:0 auto}
+
+.srow{display:flex;gap:6px;margin-top:.625rem}
+
+.sbtn{flex:1;padding:7px;border-radius:6px;font-size:11px;cursor:pointer;font-family:"Syne",sans-serif;font-weight:600}
+
+.sbtn.b{background:rgba(255,71,87,.1);border:1px solid rgba(255,71,87,.25);color:var(--danger)}
+
+.sbtn.n{background:rgba(0,255,136,.08);border:1px solid rgba(0,255,136,.2);color:var(--accent2)}
+
+.ri{display:flex;justify-content:space-between;align-items:center;padding:.45rem .75rem;border-radius:6px;margin-bottom:5px;background:var(--surface);font-size:11px;font-family:"JetBrains Mono",monospace}
+
+.tag{padding:2px 8px;border-radius:10px;font-size:10px;font-weight:700}
+
+.tag.b{background:rgba(255,71,87,.15);color:var(--danger)}
+
+.tag.n{background:rgba(0,255,136,.1);color:var(--accent2)}
+
+
+
+/* LIVE NETWORK */
+
+.live-grid{display:grid;grid-template-columns:1fr 2fr;gap:16px;max-width:960px;margin:0 auto}
+
+.live-status{display:flex;align-items:center;gap:8px;margin-bottom:1rem;font-size:13px}
+
+.live-dot{width:8px;height:8px;border-radius:50%;background:var(--muted)}
+
+.live-dot.on{background:var(--accent2);animation:pulse 1.5s infinite}
+
+.flow-table{width:100%;border-collapse:collapse;font-size:11px;font-family:"JetBrains Mono",monospace}
+
+.flow-table th{color:var(--muted);font-size:10px;letter-spacing:.06em;text-transform:uppercase;padding:.5rem .75rem;border-bottom:1px solid var(--border);text-align:left}
+
+.flow-table td{padding:.5rem .75rem;border-bottom:1px solid rgba(30,58,95,.5)}
+
+.flow-table tr.botnet-row td{background:rgba(255,71,87,.04)}
+
+.counter-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:1rem}
+
+.counter{background:var(--surface);border-radius:8px;padding:.75rem;text-align:center;border:1px solid var(--border)}
+
+.cv{font-size:22px;font-weight:800;font-family:"JetBrains Mono",monospace}
+
+.cl{font-size:10px;color:var(--muted);margin-top:2px}
+
+
+
+/* CSV UPLOAD */
+
+.upload-grid{display:grid;grid-template-columns:1fr 2fr;gap:16px;max-width:960px;margin:0 auto}
+
+.drop-zone{border:2px dashed var(--border);border-radius:12px;padding:2.5rem;text-align:center;cursor:pointer;transition:border .15s;margin-bottom:1rem}
+
+.drop-zone:hover{border-color:var(--accent)}
+
+.drop-zone p{font-size:13px;color:var(--muted);margin-top:.5rem}
+
+.csv-result-row{display:flex;justify-content:space-between;align-items:center;padding:.45rem .75rem;border-radius:6px;margin-bottom:4px;background:var(--surface);font-size:11px;font-family:"JetBrains Mono",monospace;transition:background .15s}
+
+.csv-result-row.bot{background:rgba(255,71,87,.07);border-left:2px solid var(--danger)}
+
+.csv-result-row.norm{border-left:2px solid var(--accent2)}
+
+
+
+/* SIMULATE */
+
+.sim-grid{display:grid;grid-template-columns:1fr 2fr;gap:16px;max-width:960px;margin:0 auto}
+
+.attack-feed{height:420px;overflow-y:auto;display:flex;flex-direction:column-reverse}
+
+.feed-item{display:flex;justify-content:space-between;align-items:center;padding:.5rem .75rem;border-radius:6px;margin-bottom:4px;font-size:11px;font-family:"JetBrains Mono",monospace;animation:slideIn .3s ease}
+
+@keyframes slideIn{from{opacity:0;transform:translateX(-8px)}to{opacity:1;transform:translateX(0)}}
+
+.feed-item.bot{background:rgba(255,71,87,.08);border-left:2px solid var(--danger)}
+
+.feed-item.norm{background:rgba(0,212,255,.04);border-left:2px solid rgba(0,212,255,.2)}
+
+.sim-stats{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:1rem}
+
+
+
+/* DASHBOARD */
+
+.mrow{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:1.25rem;max-width:960px;margin-left:auto;margin-right:auto}
+
+.mc{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:.875rem 1.125rem}
+
+.ml{font-size:10px;color:var(--muted);letter-spacing:.07em;text-transform:uppercase;margin-bottom:.35rem}
+
+.mv{font-size:24px;font-weight:800;font-family:"JetBrains Mono",monospace}
+
+.mv.g{color:var(--accent2)}.mv.b{color:var(--accent)}
+
+.crow{display:grid;grid-template-columns:1fr 1fr;gap:14px;max-width:960px;margin:0 auto}
+
+.cc{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:1.125rem}
+
+.ct{font-size:10px;color:var(--muted);letter-spacing:.07em;text-transform:uppercase;margin-bottom:.875rem;font-family:"JetBrains Mono",monospace}
+
+.bi{display:flex;align-items:center;gap:10px;margin-bottom:.625rem}
+
+.bn{font-size:12px;color:var(--text);width:110px;flex-shrink:0}
+
+.bt{flex:1;height:7px;background:var(--surface);border-radius:4px;overflow:hidden}
+
+.bf{height:100%;border-radius:4px}
+
+.bs{font-size:11px;font-family:"JetBrains Mono",monospace;color:var(--muted);width:36px;text-align:right}
+
+.cmg{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+
+.cmc{border-radius:8px;padding:.875rem;text-align:center}
+
+.cmc .n{font-size:20px;font-weight:800;font-family:"JetBrains Mono",monospace}
+
+.cmc .l{font-size:10px;margin-top:3px}
+
+.tp{background:rgba(0,255,136,.1);color:var(--accent2)}.tn{background:rgba(0,212,255,.08);color:var(--accent)}
+
+.fp{background:rgba(255,165,2,.1);color:var(--warn)}.fn{background:rgba(255,71,87,.1);color:var(--danger)}
+
+</style>
+
+</head>
+
+<body>
+
+<nav>
+
+  <div class="logo"><div class="dot"></div>NetGuard AI</div>
+
+  <div class="nav-links">
+
+    <button class="nl active" onclick="show('home',this)">Home</button>
+
+    <button class="nl" onclick="show('manual',this)">Detector</button>
+
+    <button class="nl" onclick="show('live',this)">Live Network</button>
+
+    <button class="nl" onclick="show('csv',this)">Upload CSV</button>
+
+    <button class="nl" onclick="show('simulate',this)">Live Attack Feed</button>
+
+    <button class="nl" onclick="show('dashboard',this)">Dashboard</button>
+
+  </div>
+
+</nav>
+
+
+
+<!-- HOME -->
+
+<div class="page active" id="home">
+
+  <div class="hero">
+
+    <div class="hbadge">ML-POWERED · REAL-TIME · CTU-13</div>
+
+    <h1>Detect <span>Botnets</span><br>Before They Strike</h1>
+
+    <p>A machine learning system trained on 2.8 million real network flows. Three ways to detect botnet traffic in real time.</p>
+
+    <div class="stats">
+
+      <div class="sc"><div class="sv">97%</div><div class="sl">Accuracy</div></div>
+
+      <div class="sc"><div class="sv">0.9946</div><div class="sl">ROC-AUC</div></div>
+
+      <div class="sc"><div class="sv">2.8M</div><div class="sl">Flows trained</div></div>
+
+    </div>
+
+  </div>
+
+  <div class="feature-grid">
+
+    <div class="fc" onclick="show('live',document.querySelectorAll('.nl')[2])">
+
+      <div class="fc-icon">📡</div>
+
+      <div class="fc-title">Live Network Capture</div>
+
+      <div class="fc-desc">Scans your real network connections and runs them through the ML model in real time.</div>
+
+    </div>
+
+    <div class="fc" onclick="show('csv',document.querySelectorAll('.nl')[3])">
+
+      <div class="fc-icon">📂</div>
+
+      <div class="fc-title">Upload CSV File</div>
+
+      <div class="fc-desc">Upload any network flow CSV and get botnet predictions for every row instantly.</div>
+
+    </div>
+
+    <div class="fc" onclick="show('simulate',document.querySelectorAll('.nl')[4])">
+
+      <div class="fc-icon">⚡</div>
+
+      <div class="fc-title">Live Attack Simulation</div>
+
+      <div class="fc-desc">Watch real CTU-13 botnet data replay as a live SOC monitoring feed with attack alerts.</div>
+
+    </div>
+
+  </div>
+
+</div>
+
+
+
+<!-- MANUAL DETECTOR -->
+
+<div class="page" id="manual">
+
+  <div class="det-grid">
+
+    <div class="panel">
+
+      <div class="pt">Enter Network Flow</div>
+
+      <div class="fg"><label class="fl">Flow Duration (seconds)</label><input class="fi" type="number" id="dur" value="0.0003"></div>
+
+      <div class="fg"><label class="fl">Total Packets</label><input class="fi" type="number" id="pkts" value="2"></div>
+
+      <div class="fg"><label class="fl">Total Bytes</label><input class="fi" type="number" id="bytes" value="203"></div>
+
+      <div class="fg"><label class="fl">Source Bytes</label><input class="fi" type="number" id="src" value="64"></div>
+
+      <button class="abtn" id="dbtn" onclick="detect()">Analyze Flow</button>
+
+      <div class="srow">
+
+        <button class="sbtn b" onclick="loadS('botnet')">Botnet Sample</button>
+
+        <button class="sbtn n" onclick="loadS('normal')">Normal Sample</button>
+
+      </div>
+
+    </div>
+
+    <div class="panel">
+
+      <div class="pt">Detection Result</div>
+
+      <div class="rbox"><div class="rl">Classification</div><div class="rv botnet" id="rv">BOTNET</div><div id="tbadge"><span class="tbadge high">HIGH THREAT</span></div></div>
+
+      <div class="cbar">
+
+        <div class="clrow"><span>Botnet confidence</span><span id="cpct">85.0%</span></div>
+
+        <div class="ctrack"><div class="cfill" id="cfill" style="width:85%;background:var(--danger)"></div></div>
+
+      </div>
+
+      <div style="margin-top:1.125rem">
+
+        <div style="font-size:10px;color:var(--muted);letter-spacing:.06em;text-transform:uppercase;margin-bottom:.5rem;font-family:'JetBrains Mono',monospace">Recent detections</div>
+
+        <div id="rlist"><div style="font-size:11px;color:var(--muted);font-family:'JetBrains Mono',monospace">No detections yet</div></div>
+
+      </div>
+
+    </div>
+
+  </div>
+
+</div>
+
+
+
+<!-- LIVE NETWORK -->
+
+<div class="page" id="live">
+
+  <div class="live-grid">
+
+    <div class="panel">
+
+      <div class="pt">Network Scanner</div>
+
+      <div class="live-status"><div class="live-dot" id="ldot"></div><span id="lstatus">Not scanning</span></div>
+
+      <div class="counter-grid">
+
+        <div class="counter"><div class="cv" id="lc-total" style="color:var(--accent)">0</div><div class="cl">Connections</div></div>
+
+        <div class="counter"><div class="cv" id="lc-bot" style="color:var(--danger)">0</div><div class="cl">Threats found</div></div>
+
+        <div class="counter"><div class="cv" id="lc-normal" style="color:var(--accent2)">0</div><div class="cl">Safe flows</div></div>
+
+        <div class="counter"><div class="cv" id="lc-scans">0</div><div class="cl">Scans done</div></div>
+
+      </div>
+
+      <button class="abtn" id="lbtn" onclick="toggleLive()">Start Scanning</button>
+
+      <button class="abtn" style="background:var(--surface);color:var(--muted);border:1px solid var(--border);margin-top:6px" onclick="clearLive()">Clear Results</button>
+
+    </div>
+
+    <div class="panel">
+
+      <div class="pt">Live Flow Results</div>
+
+      <div style="overflow-x:auto">
+
+        <table class="flow-table">
+
+          <thead><tr><th>Source IP</th><th>Dest IP</th><th>Port</th><th>Duration</th><th>Confidence</th><th>Result</th></tr></thead>
+
+          <tbody id="live-tbody"></tbody>
+
+        </table>
+
+      </div>
+
+    </div>
+
+  </div>
+
+</div>
+
+
+
+<!-- CSV UPLOAD -->
+
+<div class="page" id="csv">
+
+  <div class="upload-grid">
+
+    <div class="panel">
+
+      <div class="pt">Upload Network CSV</div>
+
+      <div class="drop-zone" onclick="document.getElementById('csvfile').click()">
+
+        <div style="font-size:28px">📂</div>
+
+        <p>Click to upload CSV file</p>
+
+        <p style="font-size:11px;margin-top:.25rem">Needs columns: Dur, TotPkts, TotBytes, SrcBytes</p>
+
+      </div>
+
+      <input type="file" id="csvfile" accept=".csv" style="display:none" onchange="uploadCSV(this)">
+
+      <div id="csv-summary" style="display:none">
+
+        <div class="counter-grid">
+
+          <div class="counter"><div class="cv" id="csv-total" style="color:var(--accent)">0</div><div class="cl">Total flows</div></div>
+
+          <div class="counter"><div class="cv" id="csv-bots" style="color:var(--danger)">0</div><div class="cl">Botnets found</div></div>
+
+        </div>
+
+      </div>
+
+      <div style="margin-top:1rem">
+
+        <div style="font-size:10px;color:var(--muted);letter-spacing:.06em;text-transform:uppercase;margin-bottom:.5rem">Tip — use the CTU-13 data</div>
+
+        <button class="abtn green" onclick="useCtu13()">Load CTU-13 Sample</button>
+
+      </div>
+
+    </div>
+
+    <div class="panel">
+
+      <div class="pt">Batch Results</div>
+
+      <div id="csv-results"><div style="font-size:12px;color:var(--muted);font-family:'JetBrains Mono',monospace">Upload a CSV to see results here</div></div>
+
+    </div>
+
+  </div>
+
+</div>
+
+
+
+<!-- LIVE ATTACK SIMULATION -->
+
+<div class="page" id="simulate">
+
+  <div class="sim-grid">
+
+    <div class="panel">
+
+      <div class="pt">Attack Simulator</div>
+
+      <div class="live-status"><div class="live-dot" id="sdot"></div><span id="sstatus">Paused</span></div>
+
+      <div class="sim-stats">
+
+        <div class="counter"><div class="cv" id="sc-flows" style="color:var(--accent)">0</div><div class="cl">Flows analysed</div></div>
+
+        <div class="counter"><div class="cv" id="sc-attacks" style="color:var(--danger)">0</div><div class="cl">Attacks detected</div></div>
+
+        <div class="counter"><div class="cv" id="sc-safe" style="color:var(--accent2)">0</div><div class="cl">Safe flows</div></div>
+
+        <div class="counter"><div class="cv" id="sc-rate">0%</div><div class="cl">Threat rate</div></div>
+
+      </div>
+
+      <button class="abtn" id="sbtn" onclick="toggleSim()">Start Simulation</button>
+
+      <button class="abtn" style="background:var(--surface);color:var(--muted);border:1px solid var(--border);margin-top:6px" onclick="clearSim()">Clear Feed</button>
+
+      <div style="margin-top:1rem;font-size:11px;color:var(--muted);line-height:1.7">Replays real CTU-13 botnet data as a live attack feed. 30% botnet rate simulated.</div>
+
+    </div>
+
+    <div class="panel" style="padding:1rem">
+
+      <div class="pt">Live Attack Feed</div>
+
+      <div class="attack-feed" id="feed"></div>
+
+    </div>
+
+  </div>
+
+</div>
+
+
+
+<!-- DASHBOARD -->
+
+<div class="page" id="dashboard">
+
+  <div class="mrow">
+
+    <div class="mc"><div class="ml">Accuracy</div><div class="mv g">97.0%</div></div>
+
+    <div class="mc"><div class="ml">ROC-AUC</div><div class="mv b">0.9946</div></div>
+
+    <div class="mc"><div class="ml">F1-Score</div><div class="mv g">0.97</div></div>
+
+    <div class="mc"><div class="ml">Botnet Recall</div><div class="mv b">0.98</div></div>
+
+  </div>
+
+  <div class="crow">
+
+    <div class="cc">
+
+      <div class="ct">Feature importance</div>
+
+      <div class="bi"><span class="bn">Duration</span><div class="bt"><div class="bf" style="width:100%;background:var(--accent)"></div></div><span class="bs">0.316</span></div>
+
+      <div class="bi"><span class="bn">Source Bytes</span><div class="bt"><div class="bf" style="width:90%;background:var(--accent)"></div></div><span class="bs">0.286</span></div>
+
+      <div class="bi"><span class="bn">Total Bytes</span><div class="bt"><div class="bf" style="width:73%;background:var(--accent)"></div></div><span class="bs">0.232</span></div>
+
+      <div class="bi"><span class="bn">Total Packets</span><div class="bt"><div class="bf" style="width:53%;background:var(--accent)"></div></div><span class="bs">0.167</span></div>
+
+      <div class="ct" style="margin-top:1.125rem">Model comparison</div>
+
+      <div class="bi"><span class="bn">Random Forest</span><div class="bt"><div class="bf" style="width:99%;background:var(--accent2)"></div></div><span class="bs">0.9946</span></div>
+
+      <div class="bi"><span class="bn">XGBoost</span><div class="bt"><div class="bf" style="width:98%;background:var(--warn)"></div></div><span class="bs">0.9928</span></div>
+
+    </div>
+
+    <div class="cc">
+
+      <div class="ct">Confusion Matrix — Random Forest</div>
+
+      <div class="cmg">
+
+        <div class="cmc tn"><div class="n">7,672</div><div class="l">True Normal</div></div>
+
+        <div class="cmc fp"><div class="n">328</div><div class="l">False Alarm</div></div>
+
+        <div class="cmc fn"><div class="n">195</div><div class="l">Missed Botnet</div></div>
+
+        <div class="cmc tp"><div class="n">7,998</div><div class="l">Caught Botnet</div></div>
+
+      </div>
+
+      <div style="margin-top:1.125rem">
+
+        <div class="ct">Dataset split</div>
+
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:.45rem">
+
+          <div style="width:9px;height:9px;border-radius:50%;background:var(--accent);flex-shrink:0"></div>
+
+          <span style="font-size:12px;flex:1">Normal traffic</span>
+
+          <span style="font-size:12px;font-family:'JetBrains Mono',monospace">2,783,675</span>
+
+        </div>
+
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:.625rem">
+
+          <div style="width:9px;height:9px;border-radius:50%;background:var(--danger);flex-shrink:0"></div>
+
+          <span style="font-size:12px;flex:1">Botnet flows</span>
+
+          <span style="font-size:12px;font-family:'JetBrains Mono',monospace">40,961</span>
+
+        </div>
+
+        <div style="height:7px;background:var(--surface);border-radius:4px;overflow:hidden">
+
+          <div style="width:98.55%;height:100%;background:var(--accent);border-radius:4px"></div>
+
+        </div>
+
+        <div style="font-size:10px;color:var(--muted);margin-top:4px">98.55% normal · 1.45% botnet</div>
+
+      </div>
+
+    </div>
+
+  </div>
+
+</div>
+
+
+
+<script>
+
+const API = window.location.origin;
+
+let liveTimer=null, simTimer=null, lScans=0, lBots=0, lNormal=0;
+
+let sFlows=0, sAttacks=0, sSafe=0;
+
+
+
+function show(id,btn){
+
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+
+  document.querySelectorAll('.nl').forEach(b=>b.classList.remove('active'));
+
+  document.getElementById(id).classList.add('active');
+
+  btn.classList.add('active');
+
+}
+
+
+
+// MANUAL DETECTOR
+
+function loadS(type){
+
+  if(type==='botnet'){document.getElementById('dur').value='0.0003';document.getElementById('pkts').value='2';document.getElementById('bytes').value='203';document.getElementById('src').value='64';}
+
+  else{document.getElementById('dur').value='0.0009';document.getElementById('pkts').value='2';document.getElementById('bytes').value='135';document.getElementById('src').value='75';}
+
+}
+
+async function detect(){
+
+  const btn=document.getElementById('dbtn');
+
+  btn.disabled=true;btn.textContent='Analyzing...';
+
+  const body={duration:parseFloat(document.getElementById('dur').value),total_pkts:parseFloat(document.getElementById('pkts').value),total_bytes:parseFloat(document.getElementById('bytes').value),src_bytes:parseFloat(document.getElementById('src').value)};
+
+  try{
+
+    const res=await fetch(API+'/predict',{method:'POST',headers:{'Content-Type':'application/json','ngrok-skip-browser-warning':'true'},body:JSON.stringify(body)});
+
+    const d=await res.json();
+
+    const rv=document.getElementById('rv');
+
+    rv.textContent=d.is_botnet?'BOTNET':'NORMAL';
+
+    rv.className='rv '+(d.is_botnet?'botnet':'normal');
+
+    document.getElementById('cpct').textContent=d.confidence.toFixed(1)+'%';
+
+    document.getElementById('cfill').style.width=d.confidence+'%';
+
+    document.getElementById('cfill').style.background=d.is_botnet?'var(--danger)':'var(--accent2)';
+
+    const lvl=d.threat_level.toLowerCase();
+
+    document.getElementById('tbadge').innerHTML='<span class="tbadge '+lvl+'">'+d.threat_level+' THREAT</span>';
+
+    const list=document.getElementById('rlist');
+
+    if(!list.querySelector('.ri'))list.innerHTML='';
+
+    const item=document.createElement('div');item.className='ri';
+
+    item.innerHTML='<span>Dur:'+body.duration+' Pkts:'+body.total_pkts+'</span><span class="tag '+(d.is_botnet?'b':'n')+'">'+(d.is_botnet?'BOTNET':'NORMAL')+'</span>';
+
+    list.prepend(item);if(list.children.length>6)list.removeChild(list.lastChild);
+
+  }catch(e){document.getElementById('rv').textContent='Error';document.getElementById('rv').className='rv wait';}
+
+  btn.disabled=false;btn.textContent='Analyze Flow';
+
+}
+
+
+
+// LIVE NETWORK
+
+function toggleLive(){
+
+  if(liveTimer){clearInterval(liveTimer);liveTimer=null;document.getElementById('lbtn').textContent='Start Scanning';document.getElementById('ldot').classList.remove('on');document.getElementById('lstatus').textContent='Stopped';}
+
+  else{liveTimer=setInterval(scanNetwork,3000);scanNetwork();document.getElementById('lbtn').textContent='Stop Scanning';document.getElementById('ldot').classList.add('on');document.getElementById('lstatus').textContent='Scanning every 3 seconds...';}
+
+}
+
+async function scanNetwork(){
+
+  try{
+
+    const res=await fetch(API+'/live-network',{headers:{'ngrok-skip-browser-warning':'true'}});
+
+    const d=await res.json();
+
+    lScans++;
+
+    document.getElementById('lc-total').textContent=d.total_connections;
+
+    document.getElementById('lc-scans').textContent=lScans;
+
+    const tbody=document.getElementById('live-tbody');
+
+    d.flows.forEach(f=>{
+
+      if(f.is_botnet)lBots++;else lNormal++;
+
+      document.getElementById('lc-bot').textContent=lBots;
+
+      document.getElementById('lc-normal').textContent=lNormal;
+
+      const tr=document.createElement('tr');
+
+      if(f.is_botnet)tr.className='botnet-row';
+
+      tr.innerHTML=`<td>${f.src}</td><td>${f.dst||'—'}</td><td>${f.port||'—'}</td><td>${f.duration}s</td><td style="color:${f.is_botnet?'var(--danger)':'var(--accent2)'}">${f.confidence.toFixed(1)}%</td><td><span class="tag ${f.is_botnet?'b':'n'}">${f.is_botnet?'BOTNET':'NORMAL'}</span></td>`;
+
+      tbody.prepend(tr);if(tbody.children.length>30)tbody.removeChild(tbody.lastChild);
+
+    });
+
+  }catch(e){}
+
+}
+
+function clearLive(){document.getElementById('live-tbody').innerHTML='';lBots=0;lNormal=0;lScans=0;document.getElementById('lc-bot').textContent=0;document.getElementById('lc-normal').textContent=0;document.getElementById('lc-scans').textContent=0;}
+
+
+
+// CSV UPLOAD
+
+async function uploadCSV(input){
+
+  const file=input.files[0];if(!file)return;
+
+  const formData=new FormData();formData.append('file',file);
+
+  try{
+
+    const res=await fetch(API+'/upload-csv',{method:'POST',headers:{'ngrok-skip-browser-warning':'true'},body:formData});
+
+    const d=await res.json();
+
+    document.getElementById('csv-summary').style.display='block';
+
+    document.getElementById('csv-total').textContent=d.total;
+
+    document.getElementById('csv-bots').textContent=d.botnets_found;
+
+    const container=document.getElementById('csv-results');
+
+    container.innerHTML='';
+
+    d.results.forEach((r,i)=>{
+
+      const div=document.createElement('div');
+
+      div.className='csv-result-row '+(r.is_botnet?'bot':'norm');
+
+      div.innerHTML=`<span>Row ${i+1} · Dur:${r.duration} Pkts:${r.total_pkts}</span><span class="tag ${r.is_botnet?'b':'n'}" style="font-size:10px">${r.confidence.toFixed(1)}% ${r.is_botnet?'BOTNET':'NORMAL'}</span>`;
+
+      container.appendChild(div);
+
+    });
+
+  }catch(e){alert('Upload failed: '+e.message);}
+
+}
+
+async function useCtu13(){
+
+  try{
+
+    const res=await fetch(API+'/simulate',{headers:{'ngrok-skip-browser-warning':'true'}});
+
+    const d=await res.json();
+
+    const container=document.getElementById('csv-results');
+
+    container.innerHTML='';
+
+    let bots=0;
+
+    d.flows.forEach((r,i)=>{
+
+      if(r.is_botnet)bots++;
+
+      const div=document.createElement('div');
+
+      div.className='csv-result-row '+(r.is_botnet?'bot':'norm');
+
+      div.innerHTML=`<span>Flow ${i+1} · Dur:${r.duration} Pkts:${r.total_pkts}</span><span class="tag ${r.is_botnet?'b':'n'}">${r.confidence.toFixed(1)}% ${r.is_botnet?'BOTNET':'NORMAL'}</span>`;
+
+      container.appendChild(div);
+
+    });
+
+    document.getElementById('csv-summary').style.display='block';
+
+    document.getElementById('csv-total').textContent=d.flows.length;
+
+    document.getElementById('csv-bots').textContent=bots;
+
+  }catch(e){}
+
+}
+
+
+
+// SIMULATION
+
+function toggleSim(){
+
+  if(simTimer){clearInterval(simTimer);simTimer=null;document.getElementById('sbtn').textContent='Start Simulation';document.getElementById('sdot').classList.remove('on');document.getElementById('sstatus').textContent='Paused';}
+
+  else{simTimer=setInterval(runSim,2000);runSim();document.getElementById('sbtn').textContent='Stop Simulation';document.getElementById('sdot').classList.add('on');document.getElementById('sstatus').textContent='Live — analysing flows...';}
+
+}
+
+async function runSim(){
+
+  try{
+
+    const res=await fetch(API+'/simulate',{headers:{'ngrok-skip-browser-warning':'true'}});
+
+    const d=await res.json();
+
+    const feed=document.getElementById('feed');
+
+    d.flows.forEach(f=>{
+
+      sFlows++;if(f.is_botnet)sAttacks++;else sSafe++;
+
+      document.getElementById('sc-flows').textContent=sFlows;
+
+      document.getElementById('sc-attacks').textContent=sAttacks;
+
+      document.getElementById('sc-safe').textContent=sSafe;
+
+      document.getElementById('sc-rate').textContent=Math.round(sAttacks/sFlows*100)+'%';
+
+      const item=document.createElement('div');
+
+      item.className='feed-item '+(f.is_botnet?'bot':'norm');
+
+      item.innerHTML=`<span>${f.timestamp} · Dur:${f.duration}s Pkts:${f.total_pkts}</span><span style="display:flex;align-items:center;gap:8px;font-size:10px"><span style="color:var(--muted)">${f.confidence.toFixed(1)}%</span><span class="tag ${f.is_botnet?'b':'n'}">${f.is_botnet?'⚠ BOTNET':'✓ NORMAL'}</span></span>`;
+
+      feed.prepend(item);if(feed.children.length>60)feed.removeChild(feed.lastChild);
+
+    });
+
+  }catch(e){}
+
+}
+
+function clearSim(){document.getElementById('feed').innerHTML='';sFlows=0;sAttacks=0;sSafe=0;document.getElementById('sc-flows').textContent=0;document.getElementById('sc-attacks').textContent=0;document.getElementById('sc-safe').textContent=0;document.getElementById('sc-rate').textContent='0%';}
+
+</script>
+
+</body>
+
+</html>
